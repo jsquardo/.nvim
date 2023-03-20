@@ -1,7 +1,8 @@
 return {
-	"catppuccin/nvim", name = "catppuccin",
+	"catppuccin/nvim",
+	name = "catppuccin",
 	config = function()
-		require("catppuccin").setup{
+		require("catppuccin").setup {
 			flavour = "mocha",
 			integrations = {
 				cmp = true,
@@ -11,7 +12,6 @@ return {
 				notify = false,
 				mini = false,
 			}
-		
 		}
 	end,
 }

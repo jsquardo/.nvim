@@ -3,5 +3,5 @@
 --
 -- See the kickstart.nvim README for more information
 return {
-    vim.cmd.colorscheme "catppuccin"
+  require('custom.plugins.colorscheme')
 }
