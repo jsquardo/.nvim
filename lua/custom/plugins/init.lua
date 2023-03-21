@@ -20,5 +20,5 @@ return {
         command = "EslintFixAll",
       })
     end,
-  })
+  }),
 }

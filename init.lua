@@ -481,43 +481,6 @@ require 'lspconfig'.lua_ls.setup {
   },
 }
 
-require("typescript").setup({
-  server = {
-    on_attach = function(client, bufnr)
-      vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-      client.server_capabilities.documentRangeFormattingProvider = false
-    end,
-    capabilities = capabilities
-  }
-})
-
--- null_ls setup
-
-local null_ls = require("null-ls")
-
-null_ls.setup({
-  sources = {
-    null_ls.builtins.diagnostics.trail_space,
-
-    null_ls.builtins.formatting.trim_newlines,
-    null_ls.builtins.formatting.trim_whitespace,
-    null_ls.builtins.formatting.prettierd.with({
-      condition = function(utils)
-        return utils.has_file({ ".prettierrc.js" })
-      end,
-    }),
-
-    null_ls.builtins.code_actions.gitsigns,
-
-    require("typescript.extensions.null-ls.code-actions"),
-  },
-  on_attach = function(client)
-    if client.server_capabilities.documentFormattingProvider then
-      vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.format({ timeout_ms = 4000 })")
-    end
-  end
-})
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
