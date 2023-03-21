@@ -3,5 +3,22 @@
 --
 -- See the kickstart.nvim README for more information
 return {
-  require('custom.plugins.colorscheme')
+  -- Catppuccin Mocha theme
+  "catppuccin/nvim",
+  name = "catppuccin",
+  -- Typescript stuff
+  'jose-elias-alvarez/typescript.nvim',
+  'windwp/nvim-ts-autotag',
+  config = true,
+  require 'lspconfig'.eslint.setup({
+    settings = {
+      packageManager = 'yarn'
+    },
+    on_attach = function(client, bufnr)
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = bufnr,
+        command = "EslintFixAll",
+      })
+    end,
+  })
 }

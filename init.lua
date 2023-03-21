@@ -57,6 +57,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
 
+  'kyazdani42/nvim-web-devicons',
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -285,6 +286,9 @@ require('nvim-treesitter.configs').setup {
 
   highlight = { enable = true },
   indent = { enable = true, disable = { 'python' } },
+  autotag = {
+    enable = true,
+  },
   incremental_selection = {
     enable = true,
     keymaps = {
@@ -436,6 +440,84 @@ mason_lspconfig.setup_handlers {
     }
   end,
 }
+
+require 'lspconfig'.eslint.setup({
+  settings = {
+    packageManager = 'npm'
+  },
+  on_attach = function(client, bufnr)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "EslintFixAll",
+    })
+  end,
+})
+
+require 'lspconfig'.html.setup {
+  capabilities = capabilities,
+}
+
+require 'lspconfig'.lua_ls.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = { 'vim' },
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
+
+require("typescript").setup({
+  server = {
+    on_attach = function(client, bufnr)
+      vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+      client.server_capabilities.documentRangeFormattingProvider = false
+    end,
+    capabilities = capabilities
+  }
+})
+
+-- null_ls setup
+
+local null_ls = require("null-ls")
+
+null_ls.setup({
+  sources = {
+    null_ls.builtins.diagnostics.trail_space,
+
+    null_ls.builtins.formatting.trim_newlines,
+    null_ls.builtins.formatting.trim_whitespace,
+    null_ls.builtins.formatting.prettierd.with({
+      condition = function(utils)
+        return utils.has_file({ ".prettierrc.js" })
+      end,
+    }),
+
+    null_ls.builtins.code_actions.gitsigns,
+
+    require("typescript.extensions.null-ls.code-actions"),
+  },
+  on_attach = function(client)
+    if client.server_capabilities.documentFormattingProvider then
+      vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.format({ timeout_ms = 4000 })")
+    end
+  end
+})
 
 -- nvim-cmp setup
 local cmp = require 'cmp'
